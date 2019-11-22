@@ -13,6 +13,7 @@ const layerIncludeList = ["popup", "pop_up"];
 let slideName = "";
 let slideWidth = 0;
 let slideHeight = 0;
+let unnamedCount = 0
 
 const createFolder = path => {
   if (!fs.existsSync(path)) {
@@ -114,13 +115,13 @@ function Layer(layer) {
     return text;
   };
   const cutName = name => {
-    const cutSymbols = name.replace(/[-\*%®@\!+\/\\?:.|><\ ]/g, "");
-    const translate = transliterate(cutSymbols).toLowerCase();
-    let replacedName = numbersInNameCheck(translate).slice(0, 15);
-    if (replacedName.length === 0) {
+    let cutSymbols = name.replace(/[-\*%®@\!+\/\\?:.|><\ ]/g, "");
+    if (cutSymbols.length === 0) {
       console.log("у одного слоя не было имени");
-      replacedName = "unnamed";
+      cutSymbols = `unnamed_${unnamedCount}`;
     }
+    const translate = transliterate(cutSymbols).toLowerCase();
+    const replacedName = numbersInNameCheck(translate).slice(0, 15);
     return replacedName;
   };
 
