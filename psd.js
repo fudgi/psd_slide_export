@@ -8,12 +8,12 @@ const sharp = require("sharp");
 const callDir = `./psd`;
 const pathToPutSlides = "./export";
 const scaleRate = 2;
-const layerExcludeList = ["ref", "global"];
+const layerExcludeList = ["ref", "global", "glbl"];
 const layerIncludeList = ["popup", "pop_up"];
 let slideName = "";
 let slideWidth = 0;
 let slideHeight = 0;
-let unnamedCount = 0
+let unnamedCount = 0;
 
 const createFolder = path => {
   if (!fs.existsSync(path)) {
@@ -115,14 +115,18 @@ function Layer(layer) {
     return text;
   };
   const cutName = name => {
-    let cutSymbols = name.replace(/[-\*%®@\!+\/\\?:.|><\ ]/g, "");
+    let cutSymbols = name.replace(/[-\*%®@\!+,\/\\?:.|><\ ]/g, "");
+    // console.log("name", name);
     if (cutSymbols.length === 0) {
-      console.log("у одного слоя не было имени");
+      unnamedCount += 1;
       cutSymbols = `unnamed_${unnamedCount}`;
+      console.log(`у одного слоя не было имени. назвал его ${cutSymbols}`);
+    } else {
+      cutSymbols = transliterate(cutSymbols).toLowerCase();
+      cutSymbols = numbersInNameCheck(cutSymbols).slice(0, 15);
     }
-    const translate = transliterate(cutSymbols).toLowerCase();
-    const replacedName = numbersInNameCheck(translate).slice(0, 15);
-    return replacedName;
+    // console.log("cutted", cutSymbols);
+    return cutSymbols;
   };
 
   this.image = layer;
@@ -205,32 +209,32 @@ const parsePSD = async file => {
 };
 
 const createSlideStructure = pathToSave => {
+  const createJade = pathToSave => {
+    const jadeTemplate = `
+  extends ../../blocks/layout/layout
+  block content
+    .slide_wrapper`;
+    fs.writeFileSync(`${pathToSave}/${slideName}.jade`, jadeTemplate);
+  };
+
+  const createCSS = pathToSave => {
+    const CSSTemplate = `
+  .slide_${slideName}{
+  }`;
+    fs.writeFileSync(`${pathToSave}/${slideName}.css`, CSSTemplate);
+  };
+
+  const createJS = pathToSave => {
+    const JSTemplate = ``;
+    fs.writeFileSync(`${pathToSave}/${slideName}.js`, JSTemplate);
+  };
+
   createFolder(pathToPutSlides);
   createFolder(pathToSave);
   createFolder(`${pathToSave}/img`);
   createJade(pathToSave);
   createCSS(pathToSave);
   createJS(pathToSave);
-};
-
-const createJade = pathToSave => {
-  const jadeTemplate = `
-extends ../../blocks/layout/layout
-block content
-  .slide_wrapper`;
-  fs.writeFileSync(`${pathToSave}/${slideName}.jade`, jadeTemplate);
-};
-
-const createCSS = pathToSave => {
-  const CSSTemplate = `
-.slide_${slideName}{
-}`;
-  fs.writeFileSync(`${pathToSave}/${slideName}.css`, CSSTemplate);
-};
-
-const createJS = pathToSave => {
-  const JSTemplate = ``;
-  fs.writeFileSync(`${pathToSave}/${slideName}.js`, JSTemplate);
 };
 
 const addJadeElement = layer => {
@@ -320,6 +324,7 @@ async function processPSD(arrPsd) {
     console.log("Работаю с :", file);
     await parsePSD(file);
     compressImg(slideName);
+    unnamedCount = 0;
   }
   console.log("done");
 }
