@@ -13,7 +13,8 @@ const layerIncludeList = ["popup", "pop_up"];
 let slideName = "";
 let slideWidth = 0;
 let slideHeight = 0;
-let unnamedCount = 0;
+let layerSavedNames = [];
+const beginTime = Date.now();
 
 const createFolder = path => {
   if (!fs.existsSync(path)) {
@@ -23,13 +24,19 @@ const createFolder = path => {
 
 const findPSD = dirname => {
   const arrPsd = [];
-  const arrDir = fs.readdirSync(dirname);
-  arrDir.map(slide => {
-    const extName = path.extname(slide);
-    if (extName === ".psd") {
-      arrPsd.push(slide);
-    }
-  });
+  try {
+    const arrDir = fs.readdirSync(dirname);
+    arrDir.map(slide => {
+      const extName = path.extname(slide);
+      if (extName === ".psd") {
+        arrPsd.push(slide);
+      }
+    });
+  } catch (err) {
+    console.warn("\x1b[41m", "Неверно задана папка для поиска");
+    console.log("\x1b[0m");
+    process.exit(1);
+  }
   return arrPsd;
 };
 const isIncluded = (replacedName, list) =>
@@ -115,17 +122,13 @@ function Layer(layer) {
     return text;
   };
   const cutName = name => {
-    let cutSymbols = name.replace(/[-\*%®@\!+,\/\\?:.|><\ ]/g, "");
-    // console.log("name", name);
+    let cutSymbols = name.replace(/[-–\*%®@\!+,\/\\?:.|><\ ]/g, "");
     if (cutSymbols.length === 0) {
-      unnamedCount += 1;
-      cutSymbols = `unnamed_${unnamedCount}`;
-      console.log(`у одного слоя не было имени. назвал его ${cutSymbols}`);
+      cutSymbols = `unnamed`;
     } else {
       cutSymbols = transliterate(cutSymbols).toLowerCase();
       cutSymbols = numbersInNameCheck(cutSymbols).slice(0, 15);
     }
-    // console.log("cutted", cutSymbols);
     return cutSymbols;
   };
 
@@ -161,7 +164,7 @@ const cropBackground = async layer => {
 
     sharp(bufferedImg)
       .jpeg({
-        quality: 70,
+        quality: 60,
         chromaSubsampling: "4:4:4"
       })
       .toFile(`${imgPath}.jpg`);
@@ -171,6 +174,11 @@ const cropBackground = async layer => {
 };
 
 const layerSave = async layer => {
+  if (layerSavedNames.includes(layer.cuttedName)) {
+    layer.cuttedName += 1;
+  }
+  layerSavedNames.push(layer.cuttedName);
+
   addJadeElement(layer);
   addCSSElement(layer);
   addJSElement(layer);
@@ -210,10 +218,9 @@ const parsePSD = async file => {
 
 const createSlideStructure = pathToSave => {
   const createJade = pathToSave => {
-    const jadeTemplate = `
-  extends ../../blocks/layout/layout
-  block content
-    .slide_wrapper`;
+    const jadeTemplate = `extends ../../blocks/layout/layout
+block content
+  .slide_wrapper`;
     fs.writeFileSync(`${pathToSave}/${slideName}.jade`, jadeTemplate);
   };
 
@@ -313,20 +320,26 @@ const compressImg = slideName => {
 
 const arrPsd = findPSD(callDir);
 if (arrPsd.length === 0) {
-  console.warn("\x1b[41m", "I don't see psd!");
+  console.warn("\x1b[41m", "В этой папке нет psd");
   console.log("\x1b[0m");
   process.exit(1);
 }
-console.log("found some", arrPsd);
+console.log("Нашел", arrPsd);
 
 async function processPSD(arrPsd) {
   for (const file of arrPsd) {
     console.log("Работаю с :", file);
     await parsePSD(file);
     compressImg(slideName);
-    unnamedCount = 0;
+    if (!layerSavedNames.includes("bg")) {
+      console.log(`в ${slideName} нет слоя с именем bg`);
+    }
+    layerSavedNames = [];
   }
   console.log("done");
+
+  const endTime = Date.now();
+  console.log(`Затраченное время: ${(endTime - beginTime) / 1000} секунд`);
 }
 
 processPSD(arrPsd);
