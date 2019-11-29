@@ -4,16 +4,15 @@
   "description": "",
   "main": "script.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "psd": "node --max_old_space_size=2000  psd.js "
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "image-size": "^0.8.3",
     "imagemin": "^7.0.1",
-    "imagemin-jpegtran": "^6.0.0",
     "imagemin-pngquant": "^8.0.0",
-    "pngquant-bin": "^5.0.2",
     "psd": "^3.2.0",
     "sharp": "^0.23.3"
   }

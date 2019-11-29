@@ -187,8 +187,9 @@ const layerSave = async layer => {
 
 const findLayer = async nodes => {
   for (const node of nodes) {
-    if (isExportable(new Layer(node))) {
-      if (node.isLayer()) await layerSave(new Layer(node));
+    const layer = new Layer(node);
+    if (isExportable(layer)) {
+      if (node.isLayer()) await layerSave(layer);
       if (node.isGroup()) await findLayer(node.children());
     }
   }
@@ -327,7 +328,7 @@ if (arrPsd.length === 0) {
 console.log("Нашел", arrPsd);
 
 async function processPSD(arrPsd) {
-  for (const file of arrPsd) {
+  for await (const file of arrPsd) {
     console.log("Работаю с :", file);
     await parsePSD(file);
     compressImg(slideName);
@@ -336,10 +337,12 @@ async function processPSD(arrPsd) {
     }
     layerSavedNames = [];
   }
-  console.log("done");
 
   const endTime = Date.now();
-  console.log(`Затраченное время: ${(endTime - beginTime) / 1000} секунд`);
+  console.log(
+    `Процесс завершен. Затраченное время: ${(endTime - beginTime) /
+      1000} секунд`
+  );
 }
 
 processPSD(arrPsd);
