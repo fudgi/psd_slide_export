@@ -8,25 +8,29 @@ const imageminPngquant = require("imagemin-pngquant");
 const sharp = require("sharp");
 const Layer = require("./scripts/Layer");
 const menu = require("./scripts/menu");
+const createSlideStructure = require("./scripts/slideStructure");
 const {
   createFolder,
   isIncluded,
   getScreenSize
 } = require("./scripts/helpers");
 
-const callDir = `./psd`;
-const pathToPutSlides = "./export";
-const scaleRate = 2;
+const defaults = {
+  callDir: "./psd",
+  pathToPutSlides: "./export",
+  scaleRate: 2,
+  projectType: "Veeva"
+};
 const layerExcludeList = ["ref", "global", "glbl"];
 const layerIncludeList = ["popup", "pop_up"];
 const beginTime = Date.now();
 
 let arrPsd = [];
-let slideName = "";
-let slideWidth = 0;
-let slideHeight = 0;
-let layerSavedNames = [];
-let projectType = "Veeva";
+let slide = {
+  name: "",
+  size: { height: 0, width: 0 },
+  layerSavedNames: []
+};
 
 const findPSD = dirname => {
   const arrPsd = [];
@@ -56,7 +60,7 @@ const findPSD = dirname => {
 };
 
 const savePng = async layer => {
-  const imgPath = `${pathToPutSlides}/${slideName}/img/${layer.cuttedName}`;
+  const imgPath = `${defaults.pathToPutSlides}/${slide.name}/img/${layer.cuttedName}`;
   const img = layer.image;
   try {
     await img.saveAsPng(`${imgPath}.png`);
@@ -69,15 +73,15 @@ const savePng = async layer => {
 
 const cropBackground = async layer => {
   try {
-    const imgPath = `${pathToPutSlides}/${slideName}/img/${layer.cuttedName}`;
+    const imgPath = `${defaults.pathToPutSlides}/${slide.name}/img/${layer.cuttedName}`;
     const bufferedImg = await sharp(`${imgPath}.png`)
       .extract({
         left: Math.abs(layer.image.left),
         top: Math.abs(layer.image.top),
-        width: slideWidth - 1,
-        height: slideHeight
+        width: slide.size.width - 1,
+        height: slide.size.height
       })
-      .resize(slideWidth, slideHeight, { fit: "cover" })
+      .resize(slide.size.width, slide.size.height, { fit: "cover" })
       .toBuffer();
 
     fs.unlink(`${imgPath}.png`, err => {
@@ -96,10 +100,10 @@ const cropBackground = async layer => {
 };
 
 const layerSave = async layer => {
-  if (layerSavedNames.includes(layer.cuttedName)) {
+  if (slide.layerSavedNames.includes(layer.cuttedName)) {
     layer.cuttedName += 1;
   }
-  layerSavedNames.push(layer.cuttedName);
+  slide.layerSavedNames.push(layer.cuttedName);
 
   addLayerDataToFile(layer);
   await savePng(layer);
@@ -122,39 +126,36 @@ const isExportable = node =>
   isIncluded(node.cuttedName, layerIncludeList);
 
 const parsePSD = async file => {
-  const path = `${callDir}/${file}`;
+  const path = `${defaults.callDir}/${file}`;
   const psd = PSD.fromFile(path);
-  const rootSize = getScreenSize(path);
-  slideHeight = rootSize.height;
-  slideWidth = rootSize.width;
+  slide.size = getScreenSize(path);
 
   psd.parse();
-  slideName = file.slice(0, -4);
-  if (slideName[0].match(/[0-9]+$/g))
+  slide.name = file.slice(0, -4);
+  if (slide.name[0].match(/[0-9]+$/g))
     console.warn(
       `Название макета полностью состоит из цифр. Нехорошо это. Обрати внимание`
     );
 
-  const pathToSave = `${pathToPutSlides}/${slideName}`;
-  createSlideStructure(pathToSave, slideName, pathToPutSlides);
+  createSlideStructure(defaults, slide);
   await findLayer(psd.tree().children());
 };
 
 const addLayerDataToFile = layer => {
   const addJadeElement = () => {
     if (layer.cuttedName === "bg") return;
-    const path = `${pathToPutSlides}/${slideName}/${slideName}.jade`;
+    const path = `${defaults.pathToPutSlides}/${slide.name}/${slide.name}.jade`;
     const prevJadeContent = fs.readFileSync(path);
     const startIndex = prevJadeContent.indexOf(".slide_wrapper") + 14;
     const startContent = prevJadeContent.slice(0, startIndex);
     const endContent = prevJadeContent.slice(startIndex);
     newJade = `${startContent}
-      .${layer.cuttedName} ${endContent}`;
+    .${layer.cuttedName} ${endContent}`;
     fs.writeFileSync(path, newJade);
   };
 
   const addCSSElement = () => {
-    const path = `${pathToPutSlides}/${slideName}/${slideName}.css`;
+    const path = `${defaults.pathToPutSlides}/${slide.name}/${slide.name}.css`;
     const name = layer.cuttedName;
     const prevCSSContent = fs.readFileSync(path);
     let newCSS = ``;
@@ -170,12 +171,12 @@ const addLayerDataToFile = layer => {
       const CSSElementTemplate = `
     .${name}{${isIncluded(name, layerIncludeList) ? `\n\t\tdisplay: none;` : ``}
       position: absolute;
-      width: width('${name}.png', ${scaleRate});
-      height: height('${name}.png', ${scaleRate});
+      width: width('${name}.png', ${defaults.scaleRate});
+      height: height('${name}.png', ${defaults.scaleRate});
       background: resolve('${name}.png') 0 0 no-repeat;
-      background-size: size('${name}.png', ${scaleRate});
-      top: ${(layer.image.get("top") / scaleRate).toFixed(1)}px;
-      left: ${(layer.image.get("left") / scaleRate).toFixed(1)}px;
+      background-size: size('${name}.png', ${defaults.scaleRate});
+      top: ${(layer.image.get("top") / defaults.scaleRate).toFixed(1)}px;
+      left: ${(layer.image.get("left") / defaults.scaleRate).toFixed(1)}px;
     }`;
       const lastIndex = prevCSSContent.lastIndexOf("}");
       const fileEnd = prevCSSContent.slice(0, lastIndex);
@@ -186,7 +187,7 @@ const addLayerDataToFile = layer => {
   };
 
   const addJSElement = () => {
-    const path = `${pathToPutSlides}/${slideName}/${slideName}.js`;
+    const path = `${defaults.pathToPutSlides}/${slide.name}/${slide.name}.js`;
     const prevJSContent = fs.readFileSync(path);
     if (
       isIncluded(layer.cuttedName, layerIncludeList) &&
@@ -205,7 +206,7 @@ const addLayerDataToFile = layer => {
 
   const addJSXElement = () => {
     if (layer.cuttedName === "bg") return;
-    const path = `${pathToPutSlides}/${slideName}/${slideName}.js`;
+    const path = `${defaults.pathToPutSlides}/${slide.name}/${slide.name}.js`;
     const prevJSContent = fs.readFileSync(path);
     const startIndex = prevJSContent.indexOf("scale-wrapper") + 15;
     const startContent = prevJSContent.slice(0, startIndex);
@@ -216,7 +217,7 @@ const addLayerDataToFile = layer => {
   };
 
   const addReactSCSSElement = () => {
-    const path = `${pathToPutSlides}/${slideName}/${slideName}.scss`;
+    const path = `${defaults.pathToPutSlides}/${slide.name}/${slide.name}.scss`;
     const name = layer.cuttedName;
     const prevCSSContent = fs.readFileSync(path);
     let newCSS = ``;
@@ -232,11 +233,11 @@ const addLayerDataToFile = layer => {
       const CSSElementTemplate = `
   .${name}{${isIncluded(name, layerIncludeList) ? `\n\t\tdisplay: none;` : ``}
     position: absolute;
-    width: ${(layer.image.get("width") / scaleRate).toFixed(1)}px;
-    height: ${(layer.image.get("height") / scaleRate).toFixed(1)}px;
+    width: ${(layer.image.get("width") / defaults.scaleRate).toFixed(1)}px;
+    height: ${(layer.image.get("height") / defaults.scaleRate).toFixed(1)}px;
     background: url('./img/${name}.png') 0 0/100% no-repeat;
-    top: ${(layer.image.get("top") / scaleRate).toFixed(1)}px;
-    left: ${(layer.image.get("left") / scaleRate).toFixed(1)}px;
+    top: ${(layer.image.get("top") / defaults.scaleRate).toFixed(1)}px;
+    left: ${(layer.image.get("left") / defaults.scaleRate).toFixed(1)}px;
   }`;
       const lastIndex = prevCSSContent.lastIndexOf("}");
       const fileEnd = prevCSSContent.slice(0, lastIndex);
@@ -247,7 +248,7 @@ const addLayerDataToFile = layer => {
   };
 
   const addReactCSSElement = () => {
-    const path = `${pathToPutSlides}/${slideName}/${slideName}.css`;
+    const path = `${defaults.pathToPutSlides}/${slide.name}/${slide.name}.css`;
     const name = layer.cuttedName;
     const prevCSSContent = fs.readFileSync(path);
     let newCSS = ``;
@@ -261,15 +262,15 @@ const addLayerDataToFile = layer => {
   ${bgElementTemplate}${fileEnd}`;
     } else {
       const CSSElementTemplate = `
-.${slideName} .${name}{${
+.${slide.name} .${name}{${
         isIncluded(name, layerIncludeList) ? `\n\t\tdisplay: none;` : ``
       }
   position: absolute;
-  width: ${(layer.image.get("width") / scaleRate).toFixed(1)}px;
-  height: ${(layer.image.get("height") / scaleRate).toFixed(1)}px;
+  width: ${(layer.image.get("width") / defaults.scaleRate).toFixed(1)}px;
+  height: ${(layer.image.get("height") / defaults.scaleRate).toFixed(1)}px;
   background: url('./img/${name}.png') 0 0/100% no-repeat;
-  top: ${(layer.image.get("top") / scaleRate).toFixed(1)}px;
-  left: ${(layer.image.get("left") / scaleRate).toFixed(1)}px;
+  top: ${(layer.image.get("top") / defaults.scaleRate).toFixed(1)}px;
+  left: ${(layer.image.get("left") / defaults.scaleRate).toFixed(1)}px;
 }`;
       newCSS = `${prevCSSContent}${CSSElementTemplate}
   `;
@@ -277,8 +278,8 @@ const addLayerDataToFile = layer => {
     fs.writeFileSync(path, newCSS);
   };
 
-  if (projectType.includes("React")) {
-    projectType.includes("STADA")
+  if (defaults.projectType.includes("React")) {
+    defaults.projectType.includes("STADA")
       ? addReactSCSSElement()
       : addReactCSSElement();
     addJSXElement();
@@ -289,72 +290,8 @@ const addLayerDataToFile = layer => {
   addJSElement();
 };
 
-const createSlideStructure = pathToSave => {
-  const createJade = () => {
-    const jadeTemplate = `extends ../../blocks/layout/layout
-block content
-  .slide_wrapper`;
-    fs.writeFileSync(`${pathToSave}/${slideName}.jade`, jadeTemplate);
-  };
-
-  const createCSS = () => {
-    const CSSTemplate = `
-  .slide_${slideName}{
-  }`;
-    fs.writeFileSync(`${pathToSave}/${slideName}.css`, CSSTemplate);
-  };
-
-  const createJS = () => {
-    const JSTemplate = ``;
-    fs.writeFileSync(`${pathToSave}/${slideName}.js`, JSTemplate);
-  };
-
-  const createJSX = cssFormat => {
-    const JSXTemplate = `
-import React from 'react';
-${
-  cssFormat === "scss"
-    ? `import Slide from '../../components/slide/slide.js';`
-    : `import Slide from '../../Slide/Slide.js'`
-}
-import './${slideName}.${cssFormat}';
-
-export default class ${slideName} extends Slide {
-  render() {
-    const { slideState } = this.state;
-    return (
-      <div className='slide ${slideName}' ref='${slideName}' data-state={slideState}>
-        <div className='scale-wrapper'>
-        </div>
-      </div>
-    );
-  }
-}`;
-    fs.writeFileSync(`${pathToSave}/${slideName}.js`, JSXTemplate);
-  };
-
-  const createSCSS = cssFormat => {
-    const SCSSTemplate = `
-.${slideName}{
-}`;
-    fs.writeFileSync(`${pathToSave}/${slideName}.${cssFormat}`, SCSSTemplate);
-  };
-
-  createFolder(pathToSave);
-  createFolder(`${pathToSave}/img`);
-  if (projectType.includes("React")) {
-    const cssFormat = projectType.includes("STADA") ? "scss" : "css";
-    createJSX(cssFormat);
-    createSCSS(cssFormat);
-    return;
-  }
-  createJade();
-  createCSS();
-  createJS();
-};
-
 const compressImg = slideName => {
-  const path = `${pathToPutSlides}/${slideName}/img`;
+  const path = `${defaults.pathToPutSlides}/${slideName}/img`;
   imagemin([`${path}/*.png`], {
     destination: path,
     plugins: [
@@ -369,11 +306,11 @@ const processPSDs = async arrPsd => {
   for await (const file of arrPsd) {
     console.log("Работаю с :", file);
     await parsePSD(file);
-    compressImg(slideName);
-    if (!layerSavedNames.includes("bg")) {
-      console.warn(`\u2191 в ${slideName} нет слоя с именем bg`);
+    compressImg(slide.name);
+    if (!slide.layerSavedNames.includes("bg")) {
+      console.warn(`\u2191 в ${slide.name} нет слоя с именем bg`);
     }
-    layerSavedNames = [];
+    slide.layerSavedNames = [];
   }
 
   const endTime = Date.now();
@@ -384,12 +321,12 @@ const processPSDs = async arrPsd => {
 };
 
 const start = async () => {
-  del.sync([pathToPutSlides]);
-  Promise.all([menu(), findPSD(callDir)]).then(result => {
-    projectType = result[0];
+  del.sync([defaults.pathToPutSlides]);
+  Promise.all([menu(), findPSD(defaults.callDir)]).then(result => {
+    defaults.projectType = result[0];
     arrPsd = result[1];
     console.log("Нашел:", arrPsd);
-    createFolder(pathToPutSlides);
+    createFolder(defaults.pathToPutSlides);
     processPSDs(arrPsd);
   });
 };
