@@ -132,7 +132,7 @@ const addLayerDataToFile = (layer, defaults, slide) => {
   ${bgElementTemplate}${fileEnd}`;
     } else {
       const CSSElementTemplate = `
-.${slide.name} .${name}{${
+   .${name}{${
         isIncluded(name, defaults.layerIncludeList)
           ? `\n\t\tdisplay: none;`
           : ``
