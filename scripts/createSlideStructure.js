@@ -24,15 +24,15 @@ block content
     fs.writeFileSync(`${path}.js`, JSTemplate);
   };
 
-  const createJSX = cssFormat => {
+  const createJSX = () => {
     const JSXTemplate = `
 import React from 'react';
 ${
-  cssFormat === "scss"
+  defaults.projectType.includes("STADA")
     ? `import Slide from '../../components/slide/slide.js';`
     : `import Slide from '../../Slide/Slide.js'`
 }
-import './${slide.name}.${cssFormat}';
+import './${slide.name}.scss';
 
 export default class ${slide.name} extends Slide {
   render() {
@@ -50,19 +50,18 @@ export default class ${slide.name} extends Slide {
     fs.writeFileSync(`${path}.js`, JSXTemplate);
   };
 
-  const createSCSS = cssFormat => {
+  const createSCSS = () => {
     const SCSSTemplate = `
 .${slide.name}{
 }`;
-    fs.writeFileSync(`${path}.${cssFormat}`, SCSSTemplate);
+    fs.writeFileSync(`${path}.scss`, SCSSTemplate);
   };
 
   createFolder(pathToSave);
   createFolder(`${pathToSave}/img`);
   if (defaults.projectType.includes("React")) {
-    const cssFormat = defaults.projectType.includes("STADA") ? "scss" : "css";
-    createJSX(cssFormat);
-    createSCSS(cssFormat);
+    createJSX();
+    createSCSS();
     return;
   }
   createJade();

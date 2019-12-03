@@ -82,7 +82,7 @@ const addLayerDataToFile = (layer, defaults, slide) => {
     fs.writeFileSync(path, newJSX);
   };
 
-  const addReactSCSSElement = () => {
+  const addReactCSSElement = () => {
     const path = `${pathToSave}.scss`;
     const name = layer.cuttedName;
     const prevCSSContent = fs.readFileSync(path);
@@ -117,43 +117,8 @@ const addLayerDataToFile = (layer, defaults, slide) => {
     fs.writeFileSync(path, newCSS);
   };
 
-  const addReactCSSElement = () => {
-    const path = `${pathToSave}.css`;
-    const name = layer.cuttedName;
-    const prevCSSContent = fs.readFileSync(path);
-    let newCSS = ``;
-    if (name === "bg") {
-      const bgElementTemplate = `background: url("./img/bg.jpg") 0 0 /contain no-repeat;`;
-      const firstIndex = prevCSSContent.indexOf("{") + 1;
-      const fileStart = prevCSSContent.slice(0, firstIndex);
-      const fileEnd = prevCSSContent.slice(firstIndex);
-      newCSS = `
-  ${fileStart}
-  ${bgElementTemplate}${fileEnd}`;
-    } else {
-      const CSSElementTemplate = `
-   .${name}{${
-        isIncluded(name, defaults.layerIncludeList)
-          ? `\n\t\tdisplay: none;`
-          : ``
-      }
-  position: absolute;
-  width: ${(layer.image.get("width") / defaults.scaleRate).toFixed(1)}px;
-  height: ${(layer.image.get("height") / defaults.scaleRate).toFixed(1)}px;
-  background: url('./img/${name}.png') 0 0/100% no-repeat;
-  top: ${(layer.image.get("top") / defaults.scaleRate).toFixed(1)}px;
-  left: ${(layer.image.get("left") / defaults.scaleRate).toFixed(1)}px;
-}`;
-      newCSS = `${prevCSSContent}${CSSElementTemplate}
-  `;
-    }
-    fs.writeFileSync(path, newCSS);
-  };
-
   if (defaults.projectType.includes("React")) {
-    defaults.projectType.includes("STADA")
-      ? addReactSCSSElement()
-      : addReactCSSElement();
+    addReactCSSElement();
     addJSXElement();
     return;
   }
