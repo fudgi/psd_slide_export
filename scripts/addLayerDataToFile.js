@@ -61,12 +61,12 @@ const addLayerDataToFile = (layer, defaults, slide) => {
     )
       return;
     const JSelement = `const slide = document.querySelector(".slide");
-  const slideAnimator = new Animator(slide);
-  slideAnimator.set(0);
-  slide.addEventListener("click", e => {
-    const state = e.target.dataset.state;
-    state && slideAnimator.set(state);
-  });`;
+const slideAnimator = new Animator(slide);
+slideAnimator.set(0);
+slide.addEventListener("click", e => {
+  const state = e.target.dataset.state;
+  state && slideAnimator.set(state);
+});`;
     fs.writeFileSync(path, JSelement);
   };
 
@@ -92,8 +92,7 @@ const addLayerDataToFile = (layer, defaults, slide) => {
       const firstIndex = prevCSSContent.indexOf("{") + 1;
       const fileStart = prevCSSContent.slice(0, firstIndex);
       const fileEnd = prevCSSContent.slice(firstIndex);
-      newCSS = `
-    ${fileStart}
+      newCSS = `${fileStart}
   ${bgElementTemplate}${fileEnd}`;
     } else {
       const CSSElementTemplate = `
