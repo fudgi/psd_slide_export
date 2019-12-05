@@ -31,19 +31,19 @@ const addLayerDataToFile = (layer, defaults, slide) => {
     ${bgElementTemplate}${fileEnd}`;
     } else {
       const CSSElementTemplate = `
-    .${name}{${
+  .${name}{${
         isIncluded(name, defaults.layerIncludeList)
           ? `\n\t\tdisplay: none;`
           : ``
       }
-      position: absolute;
-      width: width('${name}.png', ${defaults.scaleRate});
-      height: height('${name}.png', ${defaults.scaleRate});
-      background: resolve('${name}.png') 0 0 no-repeat;
-      background-size: size('${name}.png', ${defaults.scaleRate});
-      top: ${(layer.image.get("top") / defaults.scaleRate).toFixed(1)}px;
-      left: ${(layer.image.get("left") / defaults.scaleRate).toFixed(1)}px;
-    }`;
+    position: absolute;
+    width: width('${name}.png', ${defaults.scaleRate});
+    height: height('${name}.png', ${defaults.scaleRate});
+    background: resolve('${name}.png') 0 0 no-repeat;
+    background-size: size('${name}.png', ${defaults.scaleRate});
+    top: ${(layer.image.get("top") / defaults.scaleRate).toFixed(1)}px;
+    left: ${(layer.image.get("left") / defaults.scaleRate).toFixed(1)}px;
+  }`;
       const lastIndex = prevCSSContent.lastIndexOf("}");
       const fileEnd = prevCSSContent.slice(0, lastIndex);
       newCSS = `${fileEnd}${CSSElementTemplate}

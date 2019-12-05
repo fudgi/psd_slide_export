@@ -3,7 +3,7 @@ const fs = require("fs");
 const createAZVeevaSlide = (path, slide) => {
   const createAZJade = () => {
     const jadeTemplate = `extends ../../blocks/layout/layout
-  block content
+block content
   .slide_wrapper`;
     fs.writeFileSync(`${path}.jade`, jadeTemplate);
   };
