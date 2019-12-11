@@ -2,6 +2,9 @@ const { createFolder } = require("./helpers");
 const { createAZVeevaSlide } = require("./templates/astrazenecaVeevaTemplate");
 const { createStadaReactSlide } = require("./templates/stadaReactTemplate");
 const { createBayerReactSlide } = require("./templates/bayerReactTemplate");
+const {
+  createAbbottMultipageReactSlide
+} = require("./templates/abbottMultipageTemplate");
 
 const createSlideStructure = (defaults, slide) => {
   const pathToSave = `${defaults.pathToPutSlides}/${slide.name}`;
@@ -17,6 +20,9 @@ const createSlideStructure = (defaults, slide) => {
       break;
     case "React(Bayer)":
       createBayerReactSlide(path, slide);
+      break;
+    case "React(Abbott Multipage)":
+      createAbbottMultipageReactSlide(path, slide);
       break;
   }
 };

@@ -1,5 +1,10 @@
 const readline = require("readline");
-const projectTypes = ["Veeva", "React(STADA)", "React(Bayer)"];
+const projectTypes = [
+  "Veeva",
+  "React(STADA)",
+  "React(Bayer)",
+  "React(Abbott Multipage)"
+];
 
 async function menu() {
   try {
