@@ -1,4 +1,4 @@
-const PSD = require("psd");
+const PSD = require("./lib");
 const fs = require("fs");
 const path = require("path");
 const del = require("del");
@@ -149,7 +149,7 @@ const compressImg = slideName => {
     destination: path,
     plugins: [
       imageminPngquant({
-        quality: [0.6, 0.6]
+        quality: [0.6, 0.8]
       })
     ]
   });

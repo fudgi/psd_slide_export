@@ -8,8 +8,8 @@ import Slide from '../../components/slide/slide.js';
 import './${slide.name}.scss';
 
 export default class ${slide.name} extends Slide {
-  constructor() {
-    super({ header });
+  constructor(props) {
+    super({ header, ...props });
   }
   render() {
     const { slideState } = this.state;

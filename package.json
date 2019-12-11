@@ -5,11 +5,12 @@
   "main": "script.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "psd": "node --max_old_space_size=2000  psd.js "
+    "psd": "node --max-old-space-size=2048  psd.js "
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "coffee-script": "^1.12.7",
     "del": "^5.1.0",
     "image-size": "^0.8.3",
     "imagemin": "^7.0.1",
