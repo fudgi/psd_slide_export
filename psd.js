@@ -91,10 +91,10 @@ const cropBackground = async layer => {
     });
 
     sharp(bufferedImg)
-      .jpeg({
-        quality: 60,
-        chromaSubsampling: "4:4:4"
-      })
+      // .jpeg({
+      //   quality: 60,
+      //   chromaSubsampling: "4:4:4"
+      // })
       .toFile(`${imgPath}.jpg`);
   } catch (err) {
     console.log(`Не получилось кропнуть ${imgPath}.png`);
@@ -149,7 +149,7 @@ const compressImg = slideName => {
     destination: path,
     plugins: [
       imageminPngquant({
-        quality: [0.6, 0.8]
+        quality: [0.8, 1]
       })
     ]
   });
