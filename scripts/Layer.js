@@ -78,12 +78,12 @@ function Layer(layer) {
     return text;
   };
   const cutName = name => {
-    let cutSymbols = name.replace(/[-–\*%®@\!+,\/\\?:.|><\ ]/g, "");
+    let cutSymbols = name.replace(/[–\*%®@\!+,\/\\?:.|><\ ]/g, "");
     if (cutSymbols.length === 0) {
       cutSymbols = `unnamed`;
     } else {
       cutSymbols = transliterate(cutSymbols).toLowerCase();
-      cutSymbols = numbersInNameCheck(cutSymbols).slice(0, 15);
+      cutSymbols = numbersInNameCheck(cutSymbols);
     }
     return cutSymbols;
   };
