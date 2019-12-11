@@ -9,8 +9,7 @@ block content
   };
 
   const createAZCSS = () => {
-    const CSSTemplate = `
-.slide_${slide.name}{
+    const CSSTemplate = `.slide_${slide.name}{
 }`;
     fs.writeFileSync(`${path}.css`, CSSTemplate);
   };
