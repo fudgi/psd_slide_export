@@ -4,6 +4,7 @@ const path = require("path");
 const del = require("del");
 const imagemin = require("imagemin");
 const imageminPngquant = require("imagemin-pngquant");
+const imageminJpegtran = require("imagemin-jpegtran");
 const sharp = require("sharp");
 
 const Layer = require("./Layer");
@@ -145,7 +146,9 @@ module.exports = function() {
     imagemin([`${path}/*.png`], {
       destination: path,
       plugins: [
+        imageminJpegtran(),
         imageminPngquant({
+          strip: true,
           quality: [0.8, 1]
         })
       ]

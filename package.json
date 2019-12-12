@@ -1,6 +1,6 @@
 {
   "name": "psdconv",
-  "version": "1.1.12",
+  "version": "1.1.2",
   "description": "",
   "author": "fudg1",
   "main": "index.js",
@@ -16,6 +16,7 @@
     "del": "^5.1.0",
     "image-size": "^0.8.3",
     "imagemin": "^7.0.1",
+    "imagemin-jpegtran": "^6.0.0",
     "imagemin-pngquant": "^8.0.0",
     "psd": "^3.2.0",
     "sharp": "^0.23.3"
