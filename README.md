@@ -1,6 +1,6 @@
 # Установка
 
-`npm i -g exportref`
+`npm i -g psdconv`
 
 # Работа
 
