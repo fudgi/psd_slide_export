@@ -1,13 +1,15 @@
 {
-  "name": "imagine-psd-converter",
-  "version": "1.0.0",
+  "name": "psdconv",
+  "version": "1.1.1",
   "description": "",
-  "main": "script.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "psd": "node --max-old-space-size=2048  psd.js "
+  "author": "fudg1",
+  "main": "index.js",
+  "bin": {
+    "psdconv": "./bin/index.js"
   },
-  "author": "",
+  "scripts": {
+    "start": "node --max-old-space-size=2048  ./bin/index.js"
+  },
   "license": "ISC",
   "dependencies": {
     "coffee-script": "^1.12.7",
