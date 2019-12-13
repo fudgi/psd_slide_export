@@ -30,6 +30,17 @@ const header = {
 
   const createStadaSCSS = () => {
     const SCSSTemplate = `.${slide.name}{
+}
+@media (width: 1024px) {
+  .${slide.name} {
+    background-position: -190px;
+    .scale-wrapper{
+      position: absolute;
+      transform: scale(0.8);
+      top: 70px;
+      left: 10px;
+    }
+  }
 }`;
     fs.writeFileSync(`${path}.scss`, SCSSTemplate);
   };
