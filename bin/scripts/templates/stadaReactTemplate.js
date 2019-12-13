@@ -14,7 +14,8 @@ export default class ${slide.name} extends Slide {
   render() {
     const { slideState } = this.state;
     return (
-      <div className='slide ${slide.name}' ref='${slide.name}' data-state={slideState}>
+     
+      <div className={'slide ${slide.name} ${slide.name}_' + slideState} ref='${slide.name}' data-state={slideState} onClick={this.slideClickHandler}>
         <div className='scale-wrapper'>
         </div>
       </div>
