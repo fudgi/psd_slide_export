@@ -33,12 +33,11 @@ const header = {
 }
 @media (width: 1024px) {
   .${slide.name} {
-    background-position: -190px;
+    background-size: cover;
     .scale-wrapper{
       position: absolute;
       transform: scale(0.8);
-      top: 70px;
-      left: 10px;
+      top: 130px;
     }
   }
 }`;
