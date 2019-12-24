@@ -46,7 +46,7 @@ const addVeevaLayer = (layer, defaults, slide) => {
       const lastIndex = prevCSSContent.lastIndexOf("}");
       const fileEnd = prevCSSContent.slice(0, lastIndex);
       newCSS = `${fileEnd}${CSSElementTemplate}
-  }`;
+}`;
     }
     fs.writeFileSync(path, newCSS);
   };
