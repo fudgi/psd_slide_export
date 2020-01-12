@@ -12,7 +12,7 @@ const addVeevaLayer = (layer, defaults, slide) => {
     const startContent = prevJadeContent.slice(0, startIndex);
     const endContent = prevJadeContent.slice(startIndex);
     newJade = `${startContent}
-    .${layer.cuttedName} ${endContent}`;
+    .${layer.cuttedName}${endContent}`;
     fs.writeFileSync(path, newJade);
   };
 
