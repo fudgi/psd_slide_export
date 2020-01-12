@@ -4,7 +4,8 @@ const path = require("path");
 const del = require("del");
 const imagemin = require("imagemin");
 const imageminPngquant = require("imagemin-pngquant");
-const imageminJpegtran = require("imagemin-jpegtran");
+// const imageminJpegtran = require("imagemin-jpegtran");
+const imageminMozjpeg = require("imagemin-mozjpeg");
 const sharp = require("sharp");
 
 const Layer = require("./Layer");
@@ -88,11 +89,13 @@ module.exports = function() {
         if (err) console.log(`Не смог удалить ${imgPath}.png`, err);
       });
 
-      sharp(bufferedImg)
-        // .jpeg({
-        //   quality: 60,
-        //   chromaSubsampling: "4:4:4"
-        // })
+      await sharp(bufferedImg)
+        .jpeg({
+          quality: 100,
+          chromaSubsampling: "4:4:4"
+          // overshootDeringing: true,
+          // progressive: true
+        })
         .toFile(`${imgPath}.jpg`);
     } catch (err) {
       console.log(`Не получилось кропнуть ${imgPath}.png`);
@@ -143,13 +146,15 @@ module.exports = function() {
 
   const compressImg = slideName => {
     const path = `${defaults.pathToPutSlides}/${slideName}/img`;
-    imagemin([`${path}/*.png`], {
+    // console.log("compressPath", fs.readdirSync(path));
+    imagemin([`${path}/*.{jpg,png}`], {
       destination: path,
       plugins: [
-        imageminJpegtran(),
+        // imageminJpegtran(),
+        imageminMozjpeg({ quality: 90, progressive: true, smooth: 50 }),
         imageminPngquant({
           strip: true,
-          quality: [0.8, 1]
+          quality: [0.6, 0.8]
         })
       ]
     });
