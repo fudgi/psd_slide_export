@@ -24,7 +24,6 @@ module.exports = function() {
     layerExcludeList: ["ref", "global", "glbl"],
     layerIncludeList: ["popup", "pop_up"]
   };
-  const beginTime = Date.now();
 
   let arrPsd = [];
   let slide = {
@@ -161,6 +160,7 @@ module.exports = function() {
   };
 
   const processPSDs = async arrPsd => {
+    const beginTime = Date.now();
     for await (const file of arrPsd) {
       console.log("Работаю с :", file);
       await parsePSD(file);
