@@ -2,3 +2,4 @@ node_modules
 /export
 /psd
 package-lock.json
+*.psd

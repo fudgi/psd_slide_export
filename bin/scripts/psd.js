@@ -17,7 +17,7 @@ const { createFolder, isIncluded, getScreenSize } = require("./helpers");
 
 module.exports = function() {
   const defaults = {
-    callDir: "./psd",
+    callDir: "./",
     pathToPutSlides: "./export",
     scaleRate: 2,
     projectType: "Veeva",
@@ -41,7 +41,7 @@ module.exports = function() {
     } catch (err) {
       console.warn("\x1b[41m", "Неверно задана папка для поиска");
       console.log("\x1b[0m");
-      process.exit(1);
+      process.exit(0);
     }
 
     folderFilesList.forEach(slide => {
@@ -54,7 +54,7 @@ module.exports = function() {
     if (arrPsd.length === 0) {
       console.warn("\x1b[41m", "В этой папке нет psd");
       console.log("\x1b[0m");
-      process.exit(1);
+      process.exit(0);
     }
     return arrPsd;
   };
@@ -176,6 +176,7 @@ module.exports = function() {
       `Процесс завершен. Затраченное время: ${(endTime - beginTime) /
         1000} секунд`
     );
+    process.exit(0);
   };
 
   const start = async () => {
