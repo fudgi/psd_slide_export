@@ -4,7 +4,6 @@ const path = require("path");
 const del = require("del");
 const imagemin = require("imagemin");
 const imageminPngquant = require("imagemin-pngquant");
-// const imageminJpegtran = require("imagemin-jpegtran");
 const imageminMozjpeg = require("imagemin-mozjpeg");
 const sharp = require("sharp");
 
@@ -24,7 +23,7 @@ module.exports = function() {
     layerExcludeList: ["ref", "global", "glbl"],
     layerIncludeList: ["popup", "pop_up"]
   };
-
+  let beginTime;
   let arrPsd = [];
   let slide = {
     name: "",
@@ -92,8 +91,6 @@ module.exports = function() {
         .jpeg({
           quality: 100,
           chromaSubsampling: "4:4:4"
-          // overshootDeringing: true,
-          // progressive: true
         })
         .toFile(`${imgPath}.jpg`);
     } catch (err) {
@@ -145,11 +142,9 @@ module.exports = function() {
 
   const compressImg = slideName => {
     const path = `${defaults.pathToPutSlides}/${slideName}/img`;
-    // console.log("compressPath", fs.readdirSync(path));
-    imagemin([`${path}/*.{jpg,png}`], {
+    return imagemin([`${path}/*.{jpg,png}`], {
       destination: path,
       plugins: [
-        // imageminJpegtran(),
         imageminMozjpeg({ quality: 90, progressive: true, smooth: 50 }),
         imageminPngquant({
           strip: true,
@@ -160,7 +155,6 @@ module.exports = function() {
   };
 
   const processPSDs = async arrPsd => {
-    const beginTime = Date.now();
     for await (const file of arrPsd) {
       console.log("Работаю с :", file);
       await parsePSD(file);
@@ -170,25 +164,28 @@ module.exports = function() {
       }
       slide.layerSavedNames = [];
     }
-
-    const endTime = Date.now();
-    console.log(
-      `Процесс завершен. Затраченное время: ${(endTime - beginTime) /
-        1000} секунд`
-    );
-    process.exit(0);
   };
 
   const start = async () => {
     del.sync([defaults.pathToPutSlides]);
-    Promise.all([menu(), findPSD(defaults.callDir)]).then(result => {
+    Promise.all([menu(), findPSD(defaults.callDir)]).then(async result => {
       defaults.projectType = result[0];
       arrPsd = result[1];
       console.log("Нашел:", arrPsd);
       createFolder(defaults.pathToPutSlides);
-      processPSDs(arrPsd);
+      beginTime = Date.now();
+      await processPSDs(arrPsd);
     });
   };
+  process.on("exit", () => {
+    if (beginTime) {
+      const endTime = Date.now();
+      console.log(
+        `Процесс завершен. Затраченное время: ${(endTime - beginTime) /
+          1000} секунд`
+      );
+    }
+  });
 
   start();
 };
