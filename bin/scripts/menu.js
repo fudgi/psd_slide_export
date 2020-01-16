@@ -3,7 +3,8 @@ const projectTypes = [
   "Veeva",
   "React(STADA)",
   "React(Bayer)",
-  "React(Abbott Multipage)"
+  "React(Abbott Multipage)",
+  "MITouch(Danone)"
 ];
 
 async function menu() {

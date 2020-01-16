@@ -5,6 +5,7 @@ const { createBayerReactSlide } = require("./templates/bayerReactTemplate");
 const {
   createAbbottMultipageReactSlide
 } = require("./templates/abbottMultipageTemplate");
+const { createMITouchVeevaSlide } = require("./templates/miTouchTemplate.js");
 
 const createSlideStructure = (defaults, slide) => {
   const pathToSave = `${defaults.pathToPutSlides}/${slide.name}`;
@@ -23,6 +24,9 @@ const createSlideStructure = (defaults, slide) => {
       break;
     case "React(Abbott Multipage)":
       createAbbottMultipageReactSlide(path, slide);
+      break;
+    case "MITouch(Danone)":
+      createMITouchVeevaSlide(path, slide);
       break;
   }
 };
