@@ -20,6 +20,7 @@ module.exports = function() {
     pathToPutSlides: "./export",
     scaleRate: 2,
     projectType: "Veeva",
+    imagesFolder: "",
     layerExcludeList: ["ref", "global", "glbl"],
     layerIncludeList: ["popup", "pop_up"]
   };
@@ -59,7 +60,7 @@ module.exports = function() {
   };
 
   const savePng = async layer => {
-    const imgPath = `${defaults.pathToPutSlides}/${slide.name}/img/${layer.cuttedName}`;
+    const imgPath = `${defaults.pathToPutSlides}/${slide.name}/${defaults.imagesFolder}/${layer.cuttedName}`;
     const img = layer.image;
     try {
       await img.saveAsPng(`${imgPath}.png`);
@@ -72,7 +73,7 @@ module.exports = function() {
 
   const cropBackground = async layer => {
     try {
-      const imgPath = `${defaults.pathToPutSlides}/${slide.name}/img/${layer.cuttedName}`;
+      const imgPath = `${defaults.pathToPutSlides}/${slide.name}/${defaults.imagesFolder}/${layer.cuttedName}`;
       const bufferedImg = await sharp(`${imgPath}.png`)
         .extract({
           left: Math.abs(layer.image.left),
@@ -171,6 +172,8 @@ module.exports = function() {
     del.sync([defaults.pathToPutSlides]);
     Promise.all([menu(), findPSD(defaults.callDir)]).then(async result => {
       defaults.projectType = result[0];
+      defaults.imagesFolder =
+        defaults.projectType === "MITouch(Danone)" ? "images" : "img";
       arrPsd = result[1];
       console.log("Нашел:", arrPsd);
       createFolder(defaults.pathToPutSlides);

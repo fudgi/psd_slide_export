@@ -11,7 +11,7 @@ const createSlideStructure = (defaults, slide) => {
   const pathToSave = `${defaults.pathToPutSlides}/${slide.name}`;
   const path = `${pathToSave}/${slide.name}`;
   createFolder(pathToSave);
-  createFolder(`${pathToSave}/img`);
+  createFolder(`${pathToSave}/${defaults.imagesFolder}`);
   switch (defaults.projectType) {
     case "Veeva":
       createAZVeevaSlide(path, slide);
