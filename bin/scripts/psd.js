@@ -94,7 +94,8 @@ module.exports = function() {
         })
         .toFile(`${imgPath}.jpg`);
     } catch (err) {
-      console.log(`Не получилось кропнуть ${imgPath}.png`);
+      console.log("Ошибка в попытке обрезать бэкграунд: ", err);
+      console.log(`Не получилось кропнуть ${layer.name}.png`);
     }
   };
 
@@ -133,7 +134,7 @@ module.exports = function() {
     slide.name = file.slice(0, -4);
     if (slide.name[0].match(/[0-9]+$/g))
       console.warn(
-        `Название макета полностью состоит из цифр. Нехорошо это. Обрати внимание`
+        `Название макета начинается или состоит из цифр. Нехорошо это. Обрати внимание`
       );
 
     createSlideStructure(defaults, slide);
