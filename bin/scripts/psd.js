@@ -173,7 +173,7 @@ module.exports = function() {
     Promise.all([menu(), findPSD(defaults.callDir)]).then(async result => {
       defaults.projectType = result[0];
       defaults.imagesFolder =
-        defaults.projectType === "MITouch(Danone)" ? "images" : "img";
+        defaults.projectType === "MITouch(Danon)" ? "images" : "img";
       arrPsd = result[1];
       console.log("Нашел:", arrPsd);
       createFolder(defaults.pathToPutSlides);
@@ -188,6 +188,10 @@ module.exports = function() {
         `Процесс завершен. Затраченное время: ${(endTime - beginTime) /
           1000} секунд`
       );
+      if (defaults.projectType === "MITouch(Danon)")
+        console.log(
+          "Дорогой друг, не забудь заменить {{pres_name}} в parameters слайдов"
+        );
     }
   });
 

@@ -18,7 +18,7 @@ const addLayerDataToFile = (layer, defaults, slide) => {
     case "React(Abbott Multipage)":
       addAbbottLayer(layer, defaults, slide);
       break;
-    case "MITouch(Danone)":
+    case "MITouch(Danon)":
       addMITouchLayer(layer, defaults, slide);
       break;
   }

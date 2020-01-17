@@ -4,7 +4,7 @@ const projectTypes = [
   "React(STADA)",
   "React(Bayer)",
   "React(Abbott Multipage)",
-  "MITouch(Danone)"
+  "MITouch(Danon)"
 ];
 
 async function menu() {

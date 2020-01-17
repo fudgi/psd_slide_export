@@ -25,7 +25,7 @@ const createSlideStructure = (defaults, slide) => {
     case "React(Abbott Multipage)":
       createAbbottMultipageReactSlide(path, slide);
       break;
-    case "MITouch(Danone)":
+    case "MITouch(Danon)":
       createMITouchVeevaSlide(path, slide);
       break;
   }
