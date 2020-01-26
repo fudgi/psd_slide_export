@@ -4,15 +4,24 @@ const { isIncluded } = require("../helpers");
 const addVeevaLayer = (layer, defaults, slide) => {
   const pathToSave = `${defaults.pathToPutSlides}/${slide.name}/${slide.name}`;
 
+  const getLayername = layer => {
+    const attributes = layer.attributes
+      ? layer.attributes.map(attr => "(" + attr + ")")
+      : [];
+    let classes = [...layer.classes];
+    classes[0] = layer.cuttedName;
+    return classes.join(".") + attributes.join("");
+  };
   const addJadeElement = () => {
     const path = `${pathToSave}.jade`;
     if (layer.cuttedName === "bg") return;
     const prevJadeContent = fs.readFileSync(path);
-    const startIndex = prevJadeContent.indexOf(".slide_wrapper") + 14;
+    const breakWord = ".slide_wrapper";
+    const startIndex = prevJadeContent.indexOf(breakWord) + breakWord.length;
     const startContent = prevJadeContent.slice(0, startIndex);
     const endContent = prevJadeContent.slice(startIndex);
     newJade = `${startContent}
-    .${layer.cuttedName}${endContent}`;
+    .${getLayername(layer)}${endContent}`;
     fs.writeFileSync(path, newJade);
   };
 
@@ -57,16 +66,16 @@ const addVeevaLayer = (layer, defaults, slide) => {
     if (
       isIncluded(layer.cuttedName, defaults.layerIncludeList) &&
       !prevJSContent.includes("Animator")
-    )
-      return;
-    const JSelement = `const slide = document.querySelector(".slide");
+    ) {
+      const JSelement = `const slide = document.querySelector(".slide");
 const slideAnimator = new Animator(slide);
 slideAnimator.set(0);
 slide.addEventListener("click", e => {
   const state = e.target.dataset.state;
   state && slideAnimator.set(state);
 });`;
-    fs.writeFileSync(path, JSelement);
+      fs.writeFileSync(path, JSelement);
+    }
   };
 
   addJadeElement();

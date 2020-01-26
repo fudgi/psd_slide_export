@@ -4,6 +4,14 @@ const { isIncluded } = require("../helpers");
 const addAbbottLayer = (layer, defaults, slide) => {
   const pathToSave = `${defaults.pathToPutSlides}/${slide.name}/${slide.name}`;
 
+  const getClasses = layer => {
+    let classes = [...layer.classes];
+    classes[0] = layer.cuttedName;
+    return classes.join(" ");
+  };
+  const getAttributes = layer => {
+    return layer.attributes ? layer.attributes.join("") : "";
+  };
   const addJSXAbbottElement = () => {
     if (layer.cuttedName === "bg") return;
     const path = `${pathToSave}.js`;
@@ -12,7 +20,9 @@ const addAbbottLayer = (layer, defaults, slide) => {
     const startContent = prevJSContent.slice(0, startIndex);
     const endContent = prevJSContent.slice(startIndex);
     newJSX = `${startContent}
-          <div className='${layer.cuttedName}'/> ${endContent}`;
+          <div className='${getClasses(layer)}' ${getAttributes(
+      layer
+    )}/>${endContent}`;
     fs.writeFileSync(path, newJSX);
   };
 
