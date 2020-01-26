@@ -25,7 +25,6 @@ module.exports = function() {
     layerIncludeList: ["popup", "pop_up"]
   };
   let beginTime;
-  let arrPsd = [];
   let slide = {
     name: "",
     size: { height: 0, width: 0 },
@@ -112,6 +111,7 @@ module.exports = function() {
 
   const findLayer = async nodes => {
     for (const node of nodes) {
+      //TODO не создавать Layer для невидимых слоев
       const layer = new Layer(node);
       if (isExportable(layer)) {
         if (node.isLayer()) await layerSave(layer);
@@ -134,6 +134,7 @@ module.exports = function() {
     psd.parse();
     slide.name = file.slice(0, -4);
     if (slide.name[0].match(/[0-9]+$/g))
+      //TODO возможно стоит переделать этот момент
       console.warn(
         `Название макета начинается или состоит из цифр. Нехорошо это. Обрати внимание`
       );
@@ -170,16 +171,18 @@ module.exports = function() {
 
   const start = async () => {
     del.sync([defaults.pathToPutSlides]);
-    Promise.all([menu(), findPSD(defaults.callDir)]).then(async result => {
-      defaults.projectType = result[0];
-      defaults.imagesFolder =
-        defaults.projectType === "MITouch(Danon)" ? "images" : "img";
-      arrPsd = result[1];
-      console.log("Нашел:", arrPsd);
-      createFolder(defaults.pathToPutSlides);
-      beginTime = Date.now();
-      await processPSDs(arrPsd);
-    });
+    Promise.all([menu(), findPSD(defaults.callDir)]).then(
+      async ([projectType, arrPsd]) => {
+        defaults.projectType = projectType;
+        defaults.imagesFolder =
+          defaults.projectType === "MITouch(Danon)" ? "images" : "img";
+        console.log("Нашел:", arrPsd);
+        createFolder(defaults.pathToPutSlides);
+        beginTime = Date.now();
+        await processPSDs(arrPsd);
+        console.log("--------------------------------");
+      }
+    );
   };
   process.on("exit", () => {
     if (beginTime) {
