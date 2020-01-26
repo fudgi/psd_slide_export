@@ -133,8 +133,10 @@ module.exports = function() {
 
     psd.parse();
     slide.name = file.slice(0, -4);
-    if (slide.name[0].match(/[0-9]+$/g))
-      //TODO возможно стоит переделать этот момент
+    if (
+      slide.name[0].match(/[0-9]+$/g) &&
+      defaults.projectType.includes("React")
+    )
       console.warn(
         `Название макета начинается или состоит из цифр. Нехорошо это. Обрати внимание`
       );
