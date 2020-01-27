@@ -22,8 +22,17 @@ export default class ${slide.name} extends Slide {
   };
 
   const createBayerSCSS = () => {
-    const SCSSTemplate = `
-.${slide.name}{
+    const SCSSTemplate = `.${slide.name}{
+}
+@media (width: 1024px) {
+  .${slide.name} {
+    background-size: cover;
+    .scale-wrapper{
+      position: absolute;
+      transform: scale(0.8);
+      top: 90px;
+    }
+  }
 }`;
     fs.writeFileSync(`${path}.scss`, SCSSTemplate);
   };

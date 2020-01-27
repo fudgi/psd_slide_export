@@ -38,7 +38,7 @@ const header = {
     .scale-wrapper{
       position: absolute;
       transform: scale(0.8);
-      top: 130px;
+      top: 90px;
     }
   }
 }`;
