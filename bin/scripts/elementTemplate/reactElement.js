@@ -52,10 +52,11 @@ const addReactLayer = (layer, defaults, slide) => {
     top: ${(layer.image.get("top") / defaults.scaleRate).toFixed(1)}px;
     left: ${(layer.image.get("left") / defaults.scaleRate).toFixed(1)}px;
   }`;
-      const lastIndex = prevCSSContent.lastIndexOf("}");
-      const fileEnd = prevCSSContent.slice(0, lastIndex);
-      newCSS = `${fileEnd}${CSSElementTemplate}
-}`;
+      const lastIndex = prevCSSContent.lastIndexOf("@media");
+      const fileStart = prevCSSContent.slice(0, lastIndex - 2);
+      const fileEnd = prevCSSContent.slice(lastIndex - 2);
+      newCSS = `${fileStart}${CSSElementTemplate}
+${fileEnd}`;
     }
     fs.writeFileSync(path, newCSS);
   };

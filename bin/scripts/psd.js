@@ -95,7 +95,8 @@ module.exports = function() {
         .toFile(`${imgPath}.jpg`);
     } catch (err) {
       console.log("Ошибка в попытке обрезать бэкграунд: ", err);
-      console.log(`Не получилось кропнуть ${layer.name}.png`);
+      console.log(`Не получилось вытащить слой ${layer.name}.png`);
+      console.log(`Боюсь, тебе придется самому его экспортировать`);
     }
   };
 
