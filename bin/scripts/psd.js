@@ -94,7 +94,7 @@ module.exports = function() {
         })
         .toFile(`${imgPath}.jpg`);
     } catch (err) {
-      console.log("Ошибка в попытке обрезать бэкграунд: ", err);
+      console.log("Ошибка в попытке вырезать бэкграунд: ", err);
       console.log(`Не получилось вытащить слой ${layer.name}.png`);
       console.log(`Боюсь, тебе придется самому его экспортировать`);
     }
@@ -160,11 +160,23 @@ module.exports = function() {
     });
   };
 
+  const checkPSDName = name => {
+    const cuttedName = name.replace(/[^a-zA-Z0-9._-]/g, "");
+    if (cuttedName !== name)
+      console.log(
+        `В названии макета ${name} содержатся левые символы. Будь с ним осторожен`
+      );
+  };
+
   const processPSDs = async arrPsd => {
     for await (const file of arrPsd) {
       console.log("Работаю с :", file);
+      checkPSDName(file);
       await parsePSD(file);
-      compressImg(slide.name);
+      compressImg(slide.name).then(() => {
+        const currentIndex = arrPsd.indexOf(file) + 1;
+        if (currentIndex === arrPsd.length) process.exit(0);
+      });
       if (!slide.layerSavedNames.includes("bg")) {
         console.warn(`\u2191 в ${slide.name} нет слоя с именем bg`);
       }
