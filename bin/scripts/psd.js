@@ -6,6 +6,7 @@ const imagemin = require("imagemin");
 const imageminPngquant = require("imagemin-pngquant");
 const imageminMozjpeg = require("imagemin-mozjpeg");
 const sharp = require("sharp");
+const psdConvDefaults = require("./defaults");
 
 const Layer = require("./Layer");
 const menu = require("./menu");
@@ -16,13 +17,9 @@ const { createFolder, isIncluded, getScreenSize } = require("./helpers");
 
 module.exports = function() {
   const defaults = {
-    callDir: "./",
-    pathToPutSlides: "./export",
-    scaleRate: 2,
     projectType: "Veeva",
     imagesFolder: "",
-    layerExcludeList: ["ref", "global", "glbl"],
-    layerIncludeList: ["popup", "pop_up"]
+    ...psdConvDefaults
   };
   let beginTime;
   let slide = {
@@ -58,6 +55,7 @@ module.exports = function() {
     return arrPsd;
   };
 
+  //TODO убрать в Layer
   const savePng = async layer => {
     const imgPath = `${defaults.pathToPutSlides}/${slide.name}/${defaults.imagesFolder}/${layer.cuttedName}`;
     const img = layer.image;
@@ -70,6 +68,7 @@ module.exports = function() {
     if (layer.cuttedName == "bg") await cropBackground(layer);
   };
 
+  //TODO убрать в Layer
   const cropBackground = async layer => {
     try {
       const imgPath = `${defaults.pathToPutSlides}/${slide.name}/${defaults.imagesFolder}/${layer.cuttedName}`;
@@ -100,6 +99,7 @@ module.exports = function() {
     }
   };
 
+  //TODO убрать в Layer
   const layerSave = async layer => {
     if (slide.layerSavedNames.includes(layer.cuttedName)) {
       layer.cuttedName += 1;
@@ -112,7 +112,6 @@ module.exports = function() {
 
   const findLayer = async nodes => {
     for (const node of nodes) {
-      //TODO не создавать Layer для невидимых слоев
       const layer = new Layer(node);
       if (isExportable(layer)) {
         if (node.isLayer()) await layerSave(layer);
@@ -121,11 +120,11 @@ module.exports = function() {
     }
   };
 
-  const isExportable = node =>
-    (node &&
-      node.image.visible() &&
-      !isIncluded(node.cuttedName, defaults.layerExcludeList)) ||
-    isIncluded(node.cuttedName, defaults.layerIncludeList);
+  const isExportable = layer =>
+    (layer &&
+      layer.image.visible() &&
+      !isIncluded(layer.cuttedName, defaults.layerExcludeList)) ||
+    isIncluded(layer.cuttedName, defaults.layerIncludeList);
 
   const parsePSD = async file => {
     const path = `${defaults.callDir}/${file}`;
@@ -133,6 +132,7 @@ module.exports = function() {
     slide.size = getScreenSize(path);
 
     psd.parse();
+    checkPSDName(file);
     slide.name = file.slice(0, -4);
     if (
       slide.name[0].match(/[0-9]+$/g) &&
@@ -164,14 +164,13 @@ module.exports = function() {
     const cuttedName = name.replace(/[^a-zA-Z0-9._-]/g, "");
     if (cuttedName !== name)
       console.log(
-        `В названии макета ${name} содержатся левые символы. Будь с ним осторожен`
+        `Название макета ${name} содержит кириллицу или другие непозволительные символы`
       );
   };
 
   const processPSDs = async arrPsd => {
     for await (const file of arrPsd) {
       console.log("Работаю с :", file);
-      checkPSDName(file);
       await parsePSD(file);
       compressImg(slide.name).then(() => {
         const currentIndex = arrPsd.indexOf(file) + 1;
@@ -203,8 +202,10 @@ module.exports = function() {
     if (beginTime) {
       const endTime = Date.now();
       console.log(
-        `Процесс завершен. Затраченное время: ${(endTime - beginTime) /
-          1000} секунд`
+        `Процесс завершен. Затраченное время: ${(
+          (endTime - beginTime) /
+          1000
+        ).toFixed(2)} секунд`
       );
       if (defaults.projectType === "MITouch(Danon)")
         console.log(
