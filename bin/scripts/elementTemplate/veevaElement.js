@@ -31,7 +31,7 @@ const addVeevaLayer = (layer, defaults, slide) => {
     const prevCSSContent = fs.readFileSync(path);
     let newCSS = ``;
     if (name === "bg") {
-      const bgElementTemplate = `background: resolve("bg.jpg") 0 0 / 100% no-repeat;`;
+      const bgElementTemplate = `background: resolve("bg.jpg") 0 0 / contain no-repeat;`;
       const firstIndex = prevCSSContent.indexOf("{") + 1;
       const fileStart = prevCSSContent.slice(0, firstIndex);
       const fileEnd = prevCSSContent.slice(firstIndex);

@@ -48,7 +48,7 @@ const addAbbottLayer = (layer, defaults, slide) => {
     position: absolute;
     width: ${(layer.image.get("width") / defaults.scaleRate).toFixed(1)}px;
     height: ${(layer.image.get("height") / defaults.scaleRate).toFixed(1)}px;
-    background: url('./img/${name}.png') 0 0/100% no-repeat;
+    background: url('./img/${name}.png') 0 0/contain no-repeat;
     top: ${(layer.image.get("top") / defaults.scaleRate).toFixed(1)}px;
     left: ${(layer.image.get("left") / defaults.scaleRate).toFixed(1)}px;
   }`;
