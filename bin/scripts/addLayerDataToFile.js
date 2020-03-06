@@ -3,6 +3,7 @@ const addVeevaLayer = require("./elementTemplate/veevaElement");
 const addAbbottLayer = require("./elementTemplate/abbottElement");
 const addStadaLayer = require("./elementTemplate/stadaElement");
 const addMITouchLayer = require("./elementTemplate/miTouchElement");
+const addBayerReactLayer = require("./elementTemplate/bayerReactElement");
 
 const addLayerDataToFile = (layer, defaults, slide) => {
   switch (defaults.projectType) {
@@ -13,7 +14,7 @@ const addLayerDataToFile = (layer, defaults, slide) => {
       addStadaLayer(layer, defaults, slide);
       break;
     case "React(Bayer)":
-      addReactLayer(layer, defaults, slide);
+      addBayerReactLayer(layer, defaults, slide);
       break;
     case "React(Abbott Multipage)":
       addAbbottLayer(layer, defaults, slide);

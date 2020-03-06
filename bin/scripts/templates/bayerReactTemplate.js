@@ -11,9 +11,7 @@ export default class ${slide.name} extends Slide {
   render() {
     const { slideState } = this.state;
     return (
-      <div className='slide ${slide.name}' ref='${slide.name}' data-state={slideState}>
-        <div className='scale-wrapper'>
-        </div>
+      <div className='slide ${slide.name}'  data-state={slideState} onClick={this.slideClickHandler}>
       </div>
     );
   }
@@ -23,16 +21,6 @@ export default class ${slide.name} extends Slide {
 
   const createBayerSCSS = () => {
     const SCSSTemplate = `.${slide.name}{
-}
-@media (width: 1024px) {
-  .${slide.name} {
-    background-size: cover;
-    .scale-wrapper{
-      position: absolute;
-      transform: scale(0.8);
-      top: 90px;
-    }
-  }
 }`;
     fs.writeFileSync(`${path}.scss`, SCSSTemplate);
   };
