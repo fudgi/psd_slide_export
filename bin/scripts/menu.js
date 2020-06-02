@@ -1,11 +1,12 @@
 const readline = require("readline");
 const projectTypes = [
   "Veeva",
+  "MITouch",
+  "OCE",
   "React(STADA)",
   "React(Bayer)",
   "React(Abbott Multipage)",
-  "MITouch",
-  "OCE",
+  "React(Petrovax)",
 ];
 
 async function menu() {

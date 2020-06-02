@@ -3,6 +3,9 @@ const { createAZVeevaSlide } = require("./templates/astrazenecaVeevaTemplate");
 const { createStadaReactSlide } = require("./templates/stadaReactTemplate");
 const { createBayerReactSlide } = require("./templates/bayerReactTemplate");
 const {
+  createPetrovaxReactSlide,
+} = require("./templates/petrovaxReactTemplate");
+const {
   createAbbottMultipageReactSlide,
 } = require("./templates/abbottMultipageTemplate");
 const { createMITouchVeevaSlide } = require("./templates/miTouchTemplate.js");
@@ -26,6 +29,9 @@ const createSlideStructure = (defaults, slide) => {
       break;
     case "React(Abbott Multipage)":
       createAbbottMultipageReactSlide(path, slide);
+      break;
+    case "React(Petrovax)":
+      createPetrovaxReactSlide(path, slide);
       break;
     case "MITouch":
       createMITouchVeevaSlide(path, slide, projectExt);

@@ -193,6 +193,8 @@ module.exports = function () {
           defaults.projectType === "MITouch" || defaults.projectType === "OCE"
             ? "images"
             : "img";
+        defaults.scaleRate =
+          projectType === "React (Petrovax)" ? 1 : defaults.scaleRate;
         console.log("Нашел:", arrPsd);
         createFolder(defaults.pathToPutSlides);
         beginTime = Date.now();

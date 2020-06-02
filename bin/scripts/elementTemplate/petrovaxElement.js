@@ -4,14 +4,15 @@ const { isIncluded } = require("../helpers");
 const addReactLayer = (layer, defaults, slide) => {
   const pathToSave = `${defaults.pathToPutSlides}/${slide.name}/${slide.name}`;
 
-  const getClasses = layer => {
+  const getClasses = (layer) => {
     let classes = [...layer.classes];
     classes[0] = layer.cuttedName;
     return classes.join(" ");
   };
-  const getAttributes = layer => {
+  const getAttributes = (layer) => {
     return layer.attributes ? layer.attributes.join("") : "";
   };
+
   const addJSXElement = () => {
     if (layer.cuttedName === "bg") return;
     const path = `${pathToSave}.js`;
@@ -22,7 +23,7 @@ const addReactLayer = (layer, defaults, slide) => {
     newJSX = `${startContent}
           <div className='${getClasses(layer)}' ${getAttributes(
       layer
-    )}/>${endContent}`;
+    )}/> ${endContent}`;
     fs.writeFileSync(path, newJSX);
   };
 
@@ -52,9 +53,9 @@ const addReactLayer = (layer, defaults, slide) => {
     top: ${(layer.image.get("top") / defaults.scaleRate).toFixed(1)}px;
     left: ${(layer.image.get("left") / defaults.scaleRate).toFixed(1)}px;
   }`;
-      const lastIndex = prevCSSContent.lastIndexOf("@media");
-      const fileStart = prevCSSContent.slice(0, lastIndex - 2);
-      const fileEnd = prevCSSContent.slice(lastIndex - 2);
+      const lastIndex = prevCSSContent.lastIndexOf("}");
+      const fileStart = prevCSSContent.slice(0, lastIndex - 1);
+      const fileEnd = prevCSSContent.slice(lastIndex - 1);
       newCSS = `${fileStart}${CSSElementTemplate}
 ${fileEnd}`;
     }
