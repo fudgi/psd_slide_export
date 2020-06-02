@@ -15,20 +15,20 @@ const addLayerDataToFile = require("./addLayerDataToFile");
 
 const { createFolder, isIncluded, getScreenSize } = require("./helpers");
 
-module.exports = function() {
+module.exports = function () {
   const defaults = {
     projectType: "Veeva",
     imagesFolder: "",
-    ...psdConvDefaults
+    ...psdConvDefaults,
   };
   let beginTime;
   let slide = {
     name: "",
     size: { height: 0, width: 0 },
-    layerSavedNames: []
+    layerSavedNames: [],
   };
 
-  const findPSD = dirname => {
+  const findPSD = (dirname) => {
     const arrPsd = [];
     let folderFilesList = [];
 
@@ -40,7 +40,7 @@ module.exports = function() {
       process.exit(0);
     }
 
-    folderFilesList.forEach(slide => {
+    folderFilesList.forEach((slide) => {
       const extName = path.extname(slide);
       if (extName === ".psd") {
         arrPsd.push(slide);
@@ -56,7 +56,7 @@ module.exports = function() {
   };
 
   //TODO убрать в Layer
-  const savePng = async layer => {
+  const savePng = async (layer) => {
     const imgPath = `${defaults.pathToPutSlides}/${slide.name}/${defaults.imagesFolder}/${layer.cuttedName}`;
     const img = layer.image;
     try {
@@ -69,7 +69,7 @@ module.exports = function() {
   };
 
   //TODO убрать в Layer
-  const cropBackground = async layer => {
+  const cropBackground = async (layer) => {
     try {
       const imgPath = `${defaults.pathToPutSlides}/${slide.name}/${defaults.imagesFolder}/${layer.cuttedName}`;
       const bufferedImg = await sharp(`${imgPath}.png`)
@@ -77,19 +77,19 @@ module.exports = function() {
           left: Math.abs(layer.image.left),
           top: Math.abs(layer.image.top),
           width: slide.size.width - 1,
-          height: slide.size.height
+          height: slide.size.height,
         })
         .resize(slide.size.width, slide.size.height, { fit: "cover" })
         .toBuffer();
 
-      fs.unlink(`${imgPath}.png`, err => {
+      fs.unlink(`${imgPath}.png`, (err) => {
         if (err) console.log(`Не смог удалить ${imgPath}.png`, err);
       });
 
       await sharp(bufferedImg)
         .jpeg({
           quality: 100,
-          chromaSubsampling: "4:4:4"
+          chromaSubsampling: "4:4:4",
         })
         .toFile(`${imgPath}.jpg`);
     } catch (err) {
@@ -100,7 +100,7 @@ module.exports = function() {
   };
 
   //TODO убрать в Layer
-  const layerSave = async layer => {
+  const layerSave = async (layer) => {
     if (slide.layerSavedNames.includes(layer.cuttedName)) {
       layer.cuttedName += 1;
     }
@@ -110,7 +110,7 @@ module.exports = function() {
     await savePng(layer);
   };
 
-  const findLayer = async nodes => {
+  const findLayer = async (nodes) => {
     for (const node of nodes) {
       const layer = new Layer(node);
       if (isExportable(layer)) {
@@ -120,13 +120,13 @@ module.exports = function() {
     }
   };
 
-  const isExportable = layer =>
+  const isExportable = (layer) =>
     (layer &&
       layer.image.visible() &&
       !isIncluded(layer.cuttedName, defaults.layerExcludeList)) ||
     isIncluded(layer.cuttedName, defaults.layerIncludeList);
 
-  const parsePSD = async file => {
+  const parsePSD = async (file) => {
     const path = `${defaults.callDir}/${file}`;
     const psd = PSD.fromFile(path);
     slide.size = getScreenSize(path);
@@ -146,7 +146,7 @@ module.exports = function() {
     await findLayer(psd.tree().children());
   };
 
-  const compressImg = slideName => {
+  const compressImg = (slideName) => {
     const path = `${defaults.pathToPutSlides}/${slideName}/img`;
     return imagemin([`${path}/*.{jpg,png}`], {
       destination: path,
@@ -154,13 +154,13 @@ module.exports = function() {
         imageminMozjpeg({ quality: 90, progressive: true, smooth: 50 }),
         imageminPngquant({
           strip: true,
-          quality: [0.6, 0.8]
-        })
-      ]
+          quality: [0.6, 0.8],
+        }),
+      ],
     });
   };
 
-  const checkPSDName = name => {
+  const checkPSDName = (name) => {
     const cuttedName = name.replace(/[^a-zA-Z0-9._-]/g, "");
     if (cuttedName !== name)
       console.log(
@@ -168,7 +168,7 @@ module.exports = function() {
       );
   };
 
-  const processPSDs = async arrPsd => {
+  const processPSDs = async (arrPsd) => {
     for await (const file of arrPsd) {
       console.log("Работаю с :", file);
       await parsePSD(file);
@@ -186,10 +186,13 @@ module.exports = function() {
   const start = async () => {
     del.sync([defaults.pathToPutSlides]);
     Promise.all([menu(), findPSD(defaults.callDir)]).then(
-      async ([projectType, arrPsd]) => {
+      async ([{ projectType, projectExt }, arrPsd]) => {
         defaults.projectType = projectType;
+        defaults.projectExt = projectExt;
         defaults.imagesFolder =
-          defaults.projectType === "MITouch(Danon)" ? "images" : "img";
+          defaults.projectType === "MITouch" || defaults.projectType === "OCE"
+            ? "images"
+            : "img";
         console.log("Нашел:", arrPsd);
         createFolder(defaults.pathToPutSlides);
         beginTime = Date.now();
@@ -207,7 +210,7 @@ module.exports = function() {
           1000
         ).toFixed(2)} секунд`
       );
-      if (defaults.projectType === "MITouch(Danon)")
+      if (defaults.projectType === "MITouch")
         console.log(
           "Дорогой друг, не забудь заменить {{pres_name}} в parameters слайдов"
         );

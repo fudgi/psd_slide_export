@@ -1,7 +1,7 @@
 const fs = require("fs");
 const { isIncluded } = require("../helpers");
 
-const addVeevaLayer = (layer, defaults, slide) => {
+const addOCELayer = (layer, defaults, slide) => {
   const { projectExt } = defaults;
   const pathToSave = `${defaults.pathToPutSlides}/${slide.name}/${slide.name}`;
 
@@ -13,16 +13,17 @@ const addVeevaLayer = (layer, defaults, slide) => {
     classes[0] = layer.cuttedName;
     return classes.join(".") + attributes.join("");
   };
+
   const addHTMLElement = () => {
     const path = `${pathToSave}.${projectExt}`;
     if (layer.cuttedName === "bg") return;
     const prevHTMLContent = fs.readFileSync(path);
-    const breakWord = ".slide_wrapper";
+    const breakWord = "block content";
     const startIndex = prevHTMLContent.indexOf(breakWord) + breakWord.length;
     const startContent = prevHTMLContent.slice(0, startIndex);
     const endContent = prevHTMLContent.slice(startIndex);
     newHTML = `${startContent}
-    .${getLayername(layer)}${endContent}`;
+  .${getLayername(layer)}${endContent}`;
     fs.writeFileSync(path, newHTML);
   };
 
@@ -37,7 +38,7 @@ const addVeevaLayer = (layer, defaults, slide) => {
       const fileStart = prevCSSContent.slice(0, firstIndex);
       const fileEnd = prevCSSContent.slice(firstIndex);
       newCSS = `${fileStart}
-    ${bgElementTemplate}${fileEnd}`;
+  ${bgElementTemplate}${fileEnd}`;
     } else {
       const CSSElementTemplate = `
   .${name}{${
@@ -84,4 +85,4 @@ slide.addEventListener("click", e => {
   addJSElement();
 };
 
-module.exports = addVeevaLayer;
+module.exports = addOCELayer;

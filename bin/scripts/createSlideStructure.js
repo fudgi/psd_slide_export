@@ -3,18 +3,20 @@ const { createAZVeevaSlide } = require("./templates/astrazenecaVeevaTemplate");
 const { createStadaReactSlide } = require("./templates/stadaReactTemplate");
 const { createBayerReactSlide } = require("./templates/bayerReactTemplate");
 const {
-  createAbbottMultipageReactSlide
+  createAbbottMultipageReactSlide,
 } = require("./templates/abbottMultipageTemplate");
 const { createMITouchVeevaSlide } = require("./templates/miTouchTemplate.js");
+const { createOCESlide } = require("./templates/oceTemplate");
 
 const createSlideStructure = (defaults, slide) => {
-  const pathToSave = `${defaults.pathToPutSlides}/${slide.name}`;
+  const { pathToPutSlides, projectType, projectExt, imagesFolder } = defaults;
+  const pathToSave = `${pathToPutSlides}/${slide.name}`;
   const path = `${pathToSave}/${slide.name}`;
   createFolder(pathToSave);
-  createFolder(`${pathToSave}/${defaults.imagesFolder}`);
-  switch (defaults.projectType) {
+  createFolder(`${pathToSave}/${imagesFolder}`);
+  switch (projectType) {
     case "Veeva":
-      createAZVeevaSlide(path, slide);
+      createAZVeevaSlide(path, slide, projectExt);
       break;
     case "React(STADA)":
       createStadaReactSlide(path, slide);
@@ -25,8 +27,11 @@ const createSlideStructure = (defaults, slide) => {
     case "React(Abbott Multipage)":
       createAbbottMultipageReactSlide(path, slide);
       break;
-    case "MITouch(Danon)":
-      createMITouchVeevaSlide(path, slide);
+    case "MITouch":
+      createMITouchVeevaSlide(path, slide, projectExt);
+      break;
+    case "OCE":
+      createOCESlide(path, projectExt);
       break;
   }
 };

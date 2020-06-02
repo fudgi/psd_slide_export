@@ -2,28 +2,29 @@ const fs = require("fs");
 const { isIncluded } = require("../helpers");
 
 const addMITouchLayer = (layer, defaults, slide) => {
+  const { projectExt } = defaults;
   const pathToSave = `${defaults.pathToPutSlides}/${slide.name}/${slide.name}`;
 
-  const getLayername = layer => {
+  const getLayername = (layer) => {
     const attributes = layer.attributes
-      ? layer.attributes.map(attr => "(" + attr + ")")
+      ? layer.attributes.map((attr) => "(" + attr + ")")
       : [];
     let classes = [...layer.classes];
     classes[0] = layer.cuttedName;
     return classes.join(".") + attributes.join("");
   };
 
-  const addJadeElement = () => {
-    const path = `${pathToSave}.jade`;
+  const addHTMLElement = () => {
+    const path = `${pathToSave}.${projectExt}`;
     if (layer.cuttedName === "bg") return;
-    const prevJadeContent = fs.readFileSync(path);
+    const prevHTMLContent = fs.readFileSync(path);
     const breakWord = "block content";
-    const startIndex = prevJadeContent.indexOf(breakWord) + breakWord.length;
-    const startContent = prevJadeContent.slice(0, startIndex);
-    const endContent = prevJadeContent.slice(startIndex);
-    newJade = `${startContent}
+    const startIndex = prevHTMLContent.indexOf(breakWord) + breakWord.length;
+    const startContent = prevHTMLContent.slice(0, startIndex);
+    const endContent = prevHTMLContent.slice(startIndex);
+    newHTML = `${startContent}
   .${getLayername(layer)}${endContent}`;
-    fs.writeFileSync(path, newJade);
+    fs.writeFileSync(path, newHTML);
   };
 
   const addCSSElement = () => {
@@ -79,7 +80,7 @@ slide.addEventListener("click", e => {
     }
   };
 
-  addJadeElement();
+  addHTMLElement();
   addCSSElement();
   addJSElement();
 };
