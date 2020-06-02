@@ -1,9 +1,10 @@
-const addReactLayer = require("./elementTemplate/reactElement");
 const addVeevaLayer = require("./elementTemplate/veevaElement");
 const addAbbottLayer = require("./elementTemplate/abbottElement");
 const addStadaLayer = require("./elementTemplate/stadaElement");
 const addMITouchLayer = require("./elementTemplate/miTouchElement");
+const addOCELayer = require("./elementTemplate/oceElement");
 const addBayerReactLayer = require("./elementTemplate/bayerReactElement");
+const addPetrovaxReactLayer = require("./elementTemplate/petrovaxElement");
 
 const addLayerDataToFile = (layer, defaults, slide) => {
   switch (defaults.projectType) {
@@ -19,8 +20,14 @@ const addLayerDataToFile = (layer, defaults, slide) => {
     case "React(Abbott Multipage)":
       addAbbottLayer(layer, defaults, slide);
       break;
-    case "MITouch(Danon)":
+    case "React(Petrovax)":
+      addPetrovaxReactLayer(layer, defaults, slide);
+      break;
+    case "MITouch":
       addMITouchLayer(layer, defaults, slide);
+      break;
+    case "OCE":
+      addOCELayer(layer, defaults, slide);
       break;
   }
 };

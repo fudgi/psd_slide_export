@@ -1,10 +1,10 @@
 const fs = require("fs");
 
-const createMITouchVeevaSlide = (path, slide) => {
-  const createMITouchJade = () => {
-    const jadeTemplate = `extends ../../blocks/layout/layout
+const createMITouchVeevaSlide = (path, slide, extension) => {
+  const createMITouchHTML = () => {
+    const HTMLTemplate = `extends ../../blocks/layout/layout
 block content`;
-    fs.writeFileSync(`${path}.jade`, jadeTemplate);
+    fs.writeFileSync(`${path}.${extension}`, HTMLTemplate);
   };
 
   const createMITouchCSS = () => {
@@ -34,7 +34,7 @@ block content`;
     fs.writeFileSync(`./export/${slide.name}/export/export.pdf`);
   };
 
-  createMITouchJade();
+  createMITouchHTML();
   createMITouchCSS();
   createMITouchJS();
   createParameters();

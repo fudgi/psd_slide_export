@@ -1,11 +1,11 @@
 const fs = require("fs");
 
-const createAZVeevaSlide = (path, slide) => {
-  const createAZJade = () => {
-    const jadeTemplate = `extends ../../blocks/layout/layout
+const createAZVeevaSlide = (path, slide, extension) => {
+  const createAZHTML = () => {
+    const HTMLTemplate = `extends ../../blocks/layout/layout
 block content
   .slide_wrapper`;
-    fs.writeFileSync(`${path}.jade`, jadeTemplate);
+    fs.writeFileSync(`${path}.${extension}`, HTMLTemplate);
   };
 
   const createAZCSS = () => {
@@ -18,7 +18,7 @@ block content
     const JSTemplate = ``;
     fs.writeFileSync(`${path}.js`, JSTemplate);
   };
-  createAZJade();
+  createAZHTML();
   createAZCSS();
   createAZJS();
 };
