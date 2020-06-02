@@ -194,7 +194,7 @@ module.exports = function () {
             ? "images"
             : "img";
         defaults.scaleRate =
-          projectType === "React (Petrovax)" ? 1 : defaults.scaleRate;
+          projectType === "React(Petrovax)" ? 1 : defaults.scaleRate;
         console.log("Нашел:", arrPsd);
         createFolder(defaults.pathToPutSlides);
         beginTime = Date.now();
