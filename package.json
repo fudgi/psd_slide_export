@@ -1,6 +1,6 @@
 {
   "name": "psdconv",
-  "version": "1.4.2",
+  "version": "1.4.4",
   "description": "",
   "author": "fudg1",
   "main": "index.js",
@@ -13,7 +13,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fudgi/psd_slide_export.git"
+    "url": "git+https://github.com/onpoint-dev/psd_slide_export"
   },
   "dependencies": {
     "coffee-script": "^1.12.7",
