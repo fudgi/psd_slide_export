@@ -24,7 +24,7 @@ export default class ${slide.name} extends Slide {
 }
 
 const header = {
-  transparentHeader: true,
+  headerIsTransparent: true,
 };`;
     fs.writeFileSync(`${path}.js`, JSXTemplate);
   };
