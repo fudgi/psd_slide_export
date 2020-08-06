@@ -31,7 +31,7 @@ block content`;
 
   const createExport = () => {
     fs.mkdirSync(`./export/${slide.name}/export`);
-    fs.writeFileSync(`./export/${slide.name}/export/export.pdf`);
+    fs.writeFileSync(`./export/${slide.name}/export/export.pdf`,'');
   };
 
   createMITouchHTML();
