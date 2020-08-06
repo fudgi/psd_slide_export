@@ -4,12 +4,12 @@ const { isIncluded } = require("../helpers");
 const addReactLayer = (layer, defaults, slide) => {
   const pathToSave = `${defaults.pathToPutSlides}/${slide.name}/${slide.name}`;
 
-  const getClasses = layer => {
+  const getClasses = (layer) => {
     let classes = [...layer.classes];
     classes[0] = layer.cuttedName;
     return classes.join(" ");
   };
-  const getAttributes = layer => {
+  const getAttributes = (layer) => {
     return layer.attributes ? layer.attributes.join("") : "";
   };
   const addJSXElement = () => {
@@ -61,8 +61,10 @@ ${fileEnd}`;
     fs.writeFileSync(path, newCSS);
   };
 
-  addReactCSSElement();
-  addJSXElement();
+  if (layer.name.toLowerCase().trim() !== "ref") {
+    addReactCSSElement();
+    addJSXElement();
+  }
 };
 
 module.exports = addReactLayer;

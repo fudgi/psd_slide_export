@@ -62,8 +62,10 @@ ${fileEnd}`;
     fs.writeFileSync(path, newCSS);
   };
 
-  addReactCSSElement();
-  addJSXElement();
+  if (layer.name.toLowerCase().trim() !== "ref") {
+    addReactCSSElement();
+    addJSXElement();
+  }
 };
 
 module.exports = addReactLayer;

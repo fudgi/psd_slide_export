@@ -60,8 +60,11 @@ const addAbbottLayer = (layer, defaults, slide) => {
     fs.writeFileSync(path, newCSS);
   };
 
-  addReactCSSAbbottElement();
-  addJSXAbbottElement();
+
+  if (layer.name.toLowerCase().trim() !== "ref") {
+    addReactCSSAbbottElement();
+    addJSXAbbottElement();
+  }
 };
 
 module.exports = addAbbottLayer;

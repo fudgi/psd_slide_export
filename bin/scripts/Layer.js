@@ -1,5 +1,5 @@
 function Layer(layer) {
-  const numbersInNameCheck = text => {
+  const numbersInNameCheck = (text) => {
     //имя не должно начинаться или состоять из цифр
     const numbers = /[0-9]+$/g;
     const matched = text.match(numbers);
@@ -9,7 +9,7 @@ function Layer(layer) {
     }
     return text;
   };
-  const checkName = name => {
+  const checkName = (name) => {
     let cuttedLine = name.replace(/[^a-zA-Z0-9.()=""``''_-]/g, "");
     if (cuttedLine.length === 0) {
       cuttedLine = `unnamed`;
@@ -20,16 +20,16 @@ function Layer(layer) {
     return cuttedLine[0] == "." ? cuttedLine.substring(1) : cuttedLine;
   };
 
-  const getDataAttributes = name => {
+  const getDataAttributes = (name) => {
     const attributeRegEx = new RegExp(/(?<=\().+?(?=\))/g);
     const result = name.match(attributeRegEx);
     return result ? result : undefined;
   };
   const getClasses = (name, attributes = []) => {
-    const curledAttribute = attributes.map(item => `\\(${item}\\)`);
+    const curledAttribute = attributes.map((item) => `\\(${item}\\)`);
     const classesRegEx = new RegExp(curledAttribute.join("|"), "gi");
     const clearedClassesLine = name.replace(classesRegEx, "");
-    return clearedClassesLine.split(".").filter(item => item);
+    return clearedClassesLine.split(".").filter((item) => item);
   };
 
   this.image = layer;

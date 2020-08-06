@@ -120,6 +120,16 @@ module.exports = function () {
     }
   };
 
+  const findRefLayer = async (nodes) => {
+    for (const node of nodes) {
+      const layer = new Layer(node);
+      if (node.name && node.name.toLowerCase().trim() === "ref") {
+        addLayerDataToFile(layer, defaults, slide);
+      }
+      if (node.children) await findRefLayer(node.children);
+    }
+  };
+
   const isExportable = (layer) =>
     (layer &&
       layer.image.visible() &&
@@ -143,6 +153,7 @@ module.exports = function () {
       );
 
     createSlideStructure(defaults, slide);
+    findRefLayer(psd.tree().export().children);
     await findLayer(psd.tree().children());
   };
 

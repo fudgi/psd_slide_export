@@ -1,5 +1,6 @@
 const fs = require("fs");
 const { isIncluded } = require("../helpers");
+const exportRef = require("../exportRef");
 
 const addMITouchLayer = (layer, defaults, slide) => {
   const { projectExt } = defaults;
@@ -61,10 +62,23 @@ const addMITouchLayer = (layer, defaults, slide) => {
     }
     fs.writeFileSync(path, newCSS);
   };
+  const createRefContent = (layer, prevJSContent) => {
+    const refList = JSON.stringify(exportRef(layer));
+    return `${prevJSContent}
+  if (window.refsList)
+  window.refsList["${slide.name}"] = ${refList}
+  else
+  window.refsList = {  ${slide.name}: ${refList}};
+  `;
+  };
 
   const addJSElement = () => {
     const path = `${pathToSave}.js`;
     const prevJSContent = fs.readFileSync(path);
+    if (layer.name.toLowerCase().trim() === "ref") {
+      const JSelement = createRefContent(layer, prevJSContent);
+      fs.writeFileSync(path, JSelement);
+    }
     if (
       isIncluded(layer.cuttedName, defaults.layerIncludeList) &&
       !prevJSContent.includes("Animator")
@@ -80,8 +94,10 @@ slide.addEventListener("click", e => {
     }
   };
 
-  addHTMLElement();
-  addCSSElement();
+  if (layer.name.toLowerCase().trim() !== "ref") {
+    addHTMLElement();
+    addCSSElement();
+  }
   addJSElement();
 };
 

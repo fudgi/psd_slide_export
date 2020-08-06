@@ -1,29 +1,38 @@
 const fs = require("fs");
 const { isIncluded } = require("../helpers");
+const exportRef = require("../exportRef");
 
 const addReactLayer = (layer, defaults, slide) => {
   const pathToSave = `${defaults.pathToPutSlides}/${slide.name}/${slide.name}`;
 
-  const getClasses = layer => {
+  const getClasses = (layer) => {
     let classes = [...layer.classes];
     classes[0] = layer.cuttedName;
     return classes.join(" ");
   };
-  const getAttributes = layer => {
+  const getAttributes = (layer) => {
     return layer.attributes ? layer.attributes.join("") : "";
   };
 
   const addJSXElement = () => {
     if (layer.cuttedName === "bg") return;
+    let newJSX = "";
     const path = `${pathToSave}.js`;
     const prevJSContent = fs.readFileSync(path);
-    const startIndex = prevJSContent.indexOf("scale-wrapper") + 15;
-    const startContent = prevJSContent.slice(0, startIndex);
-    const endContent = prevJSContent.slice(startIndex);
-    newJSX = `${startContent}
-          <div className='${getClasses(layer)}' ${getAttributes(
-      layer
-    )}/> ${endContent}`;
+    if (layer.name.toLowerCase().trim() === "ref") {
+      const refList = exportRef(layer);
+      newJSX = `${prevJSContent}
+      const ref = ${JSON.stringify(refList)}
+      `;
+    } else {
+      const startIndex = prevJSContent.indexOf("scale-wrapper") + 15;
+      const startContent = prevJSContent.slice(0, startIndex);
+      const endContent = prevJSContent.slice(startIndex);
+      newJSX = `${startContent}
+      <div className='${getClasses(layer)}' ${getAttributes(
+        layer
+      )}/> ${endContent}`;
+    }
     fs.writeFileSync(path, newJSX);
   };
 
@@ -62,7 +71,8 @@ ${fileEnd}`;
     fs.writeFileSync(path, newCSS);
   };
 
-  addReactCSSElement();
+  if (layer.name.toLowerCase().trim() !== "ref") addReactCSSElement();
+
   addJSXElement();
 };
 
