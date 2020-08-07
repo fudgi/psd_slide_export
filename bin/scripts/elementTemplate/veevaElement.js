@@ -64,12 +64,7 @@ const addVeevaLayer = (layer, defaults, slide) => {
 
   const createRefContent = (layer, prevJSContent) => {
     const refList = JSON.stringify(exportRef(layer));
-    return `${prevJSContent}
-  if (window.refsList)
-  window.refsList["${slide.name}"] = ${refList}
-  else
-  window.refsList = {  ${slide.name}: ${refList}};
-  `;
+    return `${prevJSContent} window.refsList["${slide.name}"] = ${refList}`;
   };
 
   const addJSElement = () => {
